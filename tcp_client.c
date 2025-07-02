@@ -3,10 +3,12 @@
 #include <string.h>
 #include <errno.h>
 #include <netdb.h>
+#include <unistd.h>
 
 void validate_inputs(int argc);
-
 struct addrinfo *get_peer_address(char *hostname, char *port);
+void print_host_ip_and_service_info(struct addrinfo *peer_address);
+int get_socket_peer(struct addrinfo *peer_address);
 
 int main(int argc, char *argv[]) {
     
@@ -17,7 +19,10 @@ int main(int argc, char *argv[]) {
     char *port = argv[2];
     
     struct addrinfo *peer_address = get_peer_address(hostname, port);
+    print_host_ip_and_service_info(peer_address);
+    int socket_peer = get_socket_peer(peer_address);
 
+    close(socket_peer);
     freeaddrinfo(peer_address);
 
     return 0;
@@ -47,5 +52,31 @@ struct addrinfo *get_peer_address(char *hostname, char *port) {
     }
 
     return peer_address;
+
+}
+
+void print_host_ip_and_service_info(struct addrinfo *peer_address) {
+
+    char host_ip[100], host_service[100];
+    getnameinfo(peer_address->ai_addr, peer_address->ai_addrlen,
+                host_ip, sizeof(host_ip),
+                host_service, sizeof(host_service),
+                NI_NUMERICHOST);
+    printf("Target host IP and service: %s, %s\n", host_ip, host_service);
+
+}
+
+int get_socket_peer(struct addrinfo *peer_address) {
+
+    int socket_peer;
+    
+    socket_peer = socket(peer_address->ai_family, peer_address->ai_socktype,
+                         peer_address->ai_protocol);
+    if (socket_peer < 0) {
+        fprintf(stderr, "socket() failed. (%d)\n", errno);
+        exit(1);
+    }
+
+    return socket_peer;
 
 }
