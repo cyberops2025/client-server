@@ -23,9 +23,39 @@ int main(int argc, char *argv[]) {
     print_host_ip_and_service_info(peer_address);
     int socket_peer = get_socket_peer(peer_address);
     connect_to_peer(socket_peer, peer_address);
+    freeaddrinfo(peer_address);
+
+    printf("Connected.\n");
+
+    while (1) {
+
+        fd_set reads;
+        FD_ZERO(&reads);
+        FD_SET(socket_peer, &reads);
+
+        struct timeval timeout;
+        timeout.tv_sec = 0;
+        timeout.tv_usec = 100000;
+
+        int status = select(socket_peer+1, &reads, 0, 0, &timeout);
+        if (status < 0) {
+            fprintf(stderr, "select() failed. (%d)\n", errno);
+            exit(1);
+        }
+
+        if (FD_ISSET(socket_peer, &reads)) {
+            char read[4096];
+            int bytes_received = recv(socket_peer, read, 4096, 0);
+            if (bytes_received < 1) {
+                printf("Connection closed by peer.\n");
+                break;
+            }
+            printf("Received (%d bytes), %.*s", bytes_received, bytes_received, read);
+        }
+
+    }
 
     close(socket_peer);
-    freeaddrinfo(peer_address);
 
     return 0;
 
