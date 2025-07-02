@@ -9,6 +9,7 @@ void validate_inputs(int argc);
 struct addrinfo *get_peer_address(char *hostname, char *port);
 void print_host_ip_and_service_info(struct addrinfo *peer_address);
 int get_socket_peer(struct addrinfo *peer_address);
+void connect_to_peer(int socket_peer, struct addrinfo *peer_address);
 
 int main(int argc, char *argv[]) {
     
@@ -21,6 +22,7 @@ int main(int argc, char *argv[]) {
     struct addrinfo *peer_address = get_peer_address(hostname, port);
     print_host_ip_and_service_info(peer_address);
     int socket_peer = get_socket_peer(peer_address);
+    connect_to_peer(socket_peer, peer_address);
 
     close(socket_peer);
     freeaddrinfo(peer_address);
@@ -45,8 +47,8 @@ struct addrinfo *get_peer_address(char *hostname, char *port) {
     hints.ai_socktype = SOCK_STREAM;
     
     struct addrinfo *peer_address = malloc(sizeof(struct addrinfo));
-    int ret = getaddrinfo(hostname, port, &hints, &peer_address);
-    if (ret != 0) {
+    int status = getaddrinfo(hostname, port, &hints, &peer_address);
+    if (status != 0) {
         fprintf(stderr, "getaddrinfo() failed. (%d)\n", errno);
         exit(1);
     }
@@ -78,5 +80,15 @@ int get_socket_peer(struct addrinfo *peer_address) {
     }
 
     return socket_peer;
+
+}
+
+void connect_to_peer(int socket_peer, struct addrinfo *peer_address) {
+
+    int status = connect(socket_peer, peer_address->ai_addr, peer_address->ai_addrlen);
+    if (status != 0) {
+        fprintf(stderr, "connect() failed. (%d)\n", errno);
+        exit(1);
+    }
 
 }
