@@ -5,26 +5,24 @@
 #include <netdb.h>
 #include <unistd.h>
 
-void validate_inputs(int argc);
-struct addrinfo *get_peer_address(char *hostname, char *port);
-void print_host_ip_and_service_info(struct addrinfo *peer_address);
-int get_socket_peer(struct addrinfo *peer_address);
-void connect_to_peer(int socket_peer, struct addrinfo *peer_address);
-void print_received_data(int socket_peer);
+void                validate_inputs                 (int argc);
+struct addrinfo*    get_peer_address                (char* hostname, char* port);
+void                print_host_ip_and_service_info  (struct addrinfo* peer_address);
+int                 get_socket_peer                 (struct addrinfo* peer_address);
+void                connect_to_peer                 (int socket_peer, struct addrinfo* peer_address);
+void                print_received_data             (int socket_peer);
+int                 establish_connection            (char* hostname, char* port);
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     
     validate_inputs(argc);
+
     // These also need to be validated.
     // Focused on learning basics. Will validate later.
-    char *hostname = argv[1];
-    char *port = argv[2];
+    char* hostname  = argv[1];
+    char* port      = argv[2];
     
-    struct addrinfo *peer_address = get_peer_address(hostname, port);
-    print_host_ip_and_service_info(peer_address);
-    int socket_peer = get_socket_peer(peer_address);
-    connect_to_peer(socket_peer, peer_address);
-    freeaddrinfo(peer_address);
+    int socket_peer = establish_connection(hostname, port);
 
     printf("Connected.\n");
 
@@ -45,7 +43,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (FD_ISSET(socket_peer, &reads)) print_received_data(socket_peer);
-        
+
     }
 
     close(socket_peer);
@@ -63,13 +61,25 @@ void validate_inputs(int argc) {
 
 }
 
-struct addrinfo *get_peer_address(char *hostname, char *port) {
+int establish_connection(char* hostname, char* port) {
+
+    struct addrinfo* peer_address = get_peer_address(hostname, port);
+    print_host_ip_and_service_info(peer_address);
+    int socket_peer = get_socket_peer(peer_address);
+    connect_to_peer(socket_peer, peer_address);
+    freeaddrinfo(peer_address);
+
+    return socket_peer;
+
+}
+
+struct addrinfo* get_peer_address(char* hostname, char* port) {
 
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
     hints.ai_socktype = SOCK_STREAM;
     
-    struct addrinfo *peer_address = malloc(sizeof(struct addrinfo));
+    struct addrinfo* peer_address = malloc(sizeof(struct addrinfo));
     int status = getaddrinfo(hostname, port, &hints, &peer_address);
     if (status != 0) {
         fprintf(stderr, "getaddrinfo() failed. (%d)\n", errno);
@@ -80,7 +90,7 @@ struct addrinfo *get_peer_address(char *hostname, char *port) {
 
 }
 
-void print_host_ip_and_service_info(struct addrinfo *peer_address) {
+void print_host_ip_and_service_info(struct addrinfo* peer_address) {
 
     char host_ip[100], host_service[100];
     getnameinfo(peer_address->ai_addr, peer_address->ai_addrlen,
@@ -91,7 +101,7 @@ void print_host_ip_and_service_info(struct addrinfo *peer_address) {
 
 }
 
-int get_socket_peer(struct addrinfo *peer_address) {
+int get_socket_peer(struct addrinfo* peer_address) {
 
     int socket_peer;
     
@@ -106,7 +116,7 @@ int get_socket_peer(struct addrinfo *peer_address) {
 
 }
 
-void connect_to_peer(int socket_peer, struct addrinfo *peer_address) {
+void connect_to_peer(int socket_peer, struct addrinfo* peer_address) {
 
     int status = connect(socket_peer, peer_address->ai_addr, peer_address->ai_addrlen);
     if (status != 0) {
