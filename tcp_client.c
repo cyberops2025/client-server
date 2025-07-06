@@ -10,8 +10,9 @@ struct addrinfo*    get_peer_address                (char* hostname, char* port)
 void                print_host_ip_and_service_info  (struct addrinfo* peer_address);
 int                 get_socket_peer                 (struct addrinfo* peer_address);
 void                connect_to_peer                 (int socket_peer, struct addrinfo* peer_address);
-void                print_received_data             (int socket_peer);
+void                print_received_data             (int socket_peer, fd_set* reads);
 int                 establish_connection            (char* hostname, char* port);
+void                select_or_error                 (int socket_peer, fd_set* reads);
 
 int main(int argc, char* argv[]) {
     
@@ -31,18 +32,9 @@ int main(int argc, char* argv[]) {
         fd_set reads;
         FD_ZERO(&reads);
         FD_SET(socket_peer, &reads);
-
-        struct timeval timeout;
-        timeout.tv_sec = 0;
-        timeout.tv_usec = 100000;
-
-        int status = select(socket_peer+1, &reads, 0, 0, &timeout);
-        if (status < 0) {
-            fprintf(stderr, "select() failed. (%d)\n", errno);
-            exit(1);
-        }
-
-        if (FD_ISSET(socket_peer, &reads)) print_received_data(socket_peer);
+        
+        select_or_error(socket_peer, &reads);
+        print_received_data(socket_peer, &reads);
 
     }
 
@@ -126,14 +118,30 @@ void connect_to_peer(int socket_peer, struct addrinfo* peer_address) {
 
 }
 
-void print_received_data(int socket_peer) {
-    
-    char read[4096];
-    int bytes_received = recv(socket_peer, read, 4096, 0);
-    if (bytes_received < 1) {
-        printf("Connection closed by peer.\n");
+void print_received_data(int socket_peer, fd_set* reads) {
+
+    if (FD_ISSET(socket_peer, reads)) {
+        char read[4096];
+        int bytes_received = recv(socket_peer, read, 4096, 0);
+        if (bytes_received < 1) {
+            printf("Connection closed by peer.\n");
+            exit(1);
+        }
+        printf("Received (%d bytes), %.*s", bytes_received, bytes_received, read);
+    }
+
+}
+
+void select_or_error(int socket_peer, fd_set* reads) {
+
+    struct timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 100000;
+
+    int status = select(socket_peer+1, reads, 0, 0, &timeout);
+    if (status < 0) {
+        fprintf(stderr, "select() failed. (%d)\n", errno);
         exit(1);
     }
-    printf("Received (%d bytes), %.*s", bytes_received, bytes_received, read);
 
 }
