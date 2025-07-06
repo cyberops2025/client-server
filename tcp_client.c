@@ -10,9 +10,10 @@ struct addrinfo*    get_peer_address                (char* hostname, char* port)
 void                print_host_ip_and_service_info  (struct addrinfo* peer_address);
 int                 get_socket_peer                 (struct addrinfo* peer_address);
 void                connect_to_peer                 (int socket_peer, struct addrinfo* peer_address);
-void                print_received_data             (int socket_peer, fd_set* reads);
+void                receive_data                    (int socket_peer, fd_set* reads);
 int                 establish_connection            (char* hostname, char* port);
 void                select_or_error                 (int socket_peer, fd_set* reads);
+void                send_data                       (int socket_peer, fd_set* reads);
 
 int main(int argc, char* argv[]) {
     
@@ -30,11 +31,14 @@ int main(int argc, char* argv[]) {
     while (1) {
 
         fd_set reads;
+
         FD_ZERO(&reads);
-        FD_SET(socket_peer, &reads);
-        
+        FD_SET(socket_peer, &reads);    // SOCKET for receiving
+        FD_SET(0, &reads);              // STDIN for sending
+
         select_or_error(socket_peer, &reads);
-        print_received_data(socket_peer, &reads);
+        receive_data(socket_peer, &reads);
+        send_data(socket_peer, &reads);
 
     }
 
@@ -118,7 +122,7 @@ void connect_to_peer(int socket_peer, struct addrinfo* peer_address) {
 
 }
 
-void print_received_data(int socket_peer, fd_set* reads) {
+void receive_data(int socket_peer, fd_set* reads) {
 
     if (FD_ISSET(socket_peer, reads)) {
         char read[4096];
@@ -142,6 +146,18 @@ void select_or_error(int socket_peer, fd_set* reads) {
     if (status < 0) {
         fprintf(stderr, "select() failed. (%d)\n", errno);
         exit(1);
+    }
+
+}
+
+void send_data(int socket_peer, fd_set* reads) {
+
+    if (FD_ISSET(0, reads)) {
+        char read[4096];
+        if (!fgets(read, 4096, stdin)) exit(1);
+        printf("Sending %s", read);
+        int bytes_sent = send(socket_peer, read, strlen(read), 0);
+        printf("Sent %d bytes.\n", bytes_sent);
     }
 
 }
