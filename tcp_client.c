@@ -10,6 +10,7 @@ struct addrinfo *get_peer_address(char *hostname, char *port);
 void print_host_ip_and_service_info(struct addrinfo *peer_address);
 int get_socket_peer(struct addrinfo *peer_address);
 void connect_to_peer(int socket_peer, struct addrinfo *peer_address);
+void print_received_data(int socket_peer);
 
 int main(int argc, char *argv[]) {
     
@@ -43,16 +44,8 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
 
-        if (FD_ISSET(socket_peer, &reads)) {
-            char read[4096];
-            int bytes_received = recv(socket_peer, read, 4096, 0);
-            if (bytes_received < 1) {
-                printf("Connection closed by peer.\n");
-                break;
-            }
-            printf("Received (%d bytes), %.*s", bytes_received, bytes_received, read);
-        }
-
+        if (FD_ISSET(socket_peer, &reads)) print_received_data(socket_peer);
+        
     }
 
     close(socket_peer);
@@ -120,5 +113,17 @@ void connect_to_peer(int socket_peer, struct addrinfo *peer_address) {
         fprintf(stderr, "connect() failed. (%d)\n", errno);
         exit(1);
     }
+
+}
+
+void print_received_data(int socket_peer) {
+    
+    char read[4096];
+    int bytes_received = recv(socket_peer, read, 4096, 0);
+    if (bytes_received < 1) {
+        printf("Connection closed by peer.\n");
+        exit(1);
+    }
+    printf("Received (%d bytes), %.*s", bytes_received, bytes_received, read);
 
 }
