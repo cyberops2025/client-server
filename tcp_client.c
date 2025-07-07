@@ -34,31 +34,6 @@ int main(int argc, char* argv[]) {
 
 }
 
-int get_socket_peer(struct addrinfo* peer_address) {
-
-    int socket_peer;
-    
-    socket_peer = socket(peer_address->ai_family, peer_address->ai_socktype,
-                         peer_address->ai_protocol);
-    if (socket_peer < 0) {
-        fprintf(stderr, "socket() failed. (%d)\n", errno);
-        exit(1);
-    }
-
-    return socket_peer;
-
-}
-
-void connect_to_peer(int socket_peer, struct addrinfo* peer_address) {
-
-    int status = connect(socket_peer, peer_address->ai_addr, peer_address->ai_addrlen);
-    if (status != 0) {
-        fprintf(stderr, "connect() failed. (%d)\n", errno);
-        exit(1);
-    }
-
-}
-
 void receive_data(int socket_peer, fd_set* reads) {
 
     if (FD_ISSET(socket_peer, reads)) {
