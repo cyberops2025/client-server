@@ -1,5 +1,5 @@
-#include "get_peer_address.h"
 #include "includes.h"
+#include "get_peer_address.h"
 
 struct addrinfo* get_peer_address(char* hostname, char* port) {
 

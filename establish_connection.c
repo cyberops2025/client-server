@@ -1,6 +1,7 @@
-#include "establish_connection.h"
 #include "includes.h"
+#include "establish_connection.h"
 #include "get_peer_address.h"
+#include "print_host_ip_and_service_info.h"
 
 int establish_connection(char* hostname, char* port) {
 

@@ -1,5 +1,5 @@
-#include "validate_inputs.h"
 #include "includes.h"
+#include "validate_inputs.h"
 
 void validate_inputs(int argc) {
 

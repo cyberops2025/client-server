@@ -34,17 +34,6 @@ int main(int argc, char* argv[]) {
 
 }
 
-void print_host_ip_and_service_info(struct addrinfo* peer_address) {
-
-    char host_ip[100], host_service[100];
-    getnameinfo(peer_address->ai_addr, peer_address->ai_addrlen,
-                host_ip, sizeof(host_ip),
-                host_service, sizeof(host_service),
-                NI_NUMERICHOST);
-    printf("Target host IP and service: %s, %s\n", host_ip, host_service);
-
-}
-
 int get_socket_peer(struct addrinfo* peer_address) {
 
     int socket_peer;
