@@ -8,7 +8,6 @@
 #include <string.h>
 #include <unistd.h>
 
-struct addrinfo*    get_peer_address                (char* hostname, char* port);
 void                print_host_ip_and_service_info  (struct addrinfo* peer_address);
 int                 get_socket_peer                 (struct addrinfo* peer_address);
 void                connect_to_peer                 (int socket_peer, struct addrinfo* peer_address);

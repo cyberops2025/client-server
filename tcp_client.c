@@ -34,23 +34,6 @@ int main(int argc, char* argv[]) {
 
 }
 
-struct addrinfo* get_peer_address(char* hostname, char* port) {
-
-    struct addrinfo hints;
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_socktype = SOCK_STREAM;
-    
-    struct addrinfo* peer_address = malloc(sizeof(struct addrinfo));
-    int status = getaddrinfo(hostname, port, &hints, &peer_address);
-    if (status != 0) {
-        fprintf(stderr, "getaddrinfo() failed. (%d)\n", errno);
-        exit(1);
-    }
-
-    return peer_address;
-
-}
-
 void print_host_ip_and_service_info(struct addrinfo* peer_address) {
 
     char host_ip[100], host_service[100];
