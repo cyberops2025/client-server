@@ -1,1 +1,2 @@
-*.exe
+tcp_client
+*.o

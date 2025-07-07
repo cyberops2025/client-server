@@ -1,11 +1,6 @@
-#include <errno.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include "includes.h"
+#include "validate_inputs.h"
 
-void                validate_inputs                 (int argc);
 struct addrinfo*    get_peer_address                (char* hostname, char* port);
 void                print_host_ip_and_service_info  (struct addrinfo* peer_address);
 int                 get_socket_peer                 (struct addrinfo* peer_address);
@@ -45,15 +40,6 @@ int main(int argc, char* argv[]) {
     close(socket_peer);
 
     return 0;
-
-}
-
-void validate_inputs(int argc) {
-
-    if (argc < 3) {
-        fprintf(stderr, "usage: tcp_client hostname port\n");
-        exit(1);
-    }
 
 }
 
