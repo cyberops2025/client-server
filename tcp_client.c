@@ -1,15 +1,6 @@
 #include "includes.h"
 #include "validate_inputs.h"
 
-struct addrinfo*    get_peer_address                (char* hostname, char* port);
-void                print_host_ip_and_service_info  (struct addrinfo* peer_address);
-int                 get_socket_peer                 (struct addrinfo* peer_address);
-void                connect_to_peer                 (int socket_peer, struct addrinfo* peer_address);
-void                receive_data                    (int socket_peer, fd_set* reads);
-int                 establish_connection            (char* hostname, char* port);
-void                select_or_error                 (int socket_peer, fd_set* reads);
-void                send_data                       (int socket_peer, fd_set* reads);
-
 int main(int argc, char* argv[]) {
     
     validate_inputs(argc);
@@ -40,18 +31,6 @@ int main(int argc, char* argv[]) {
     close(socket_peer);
 
     return 0;
-
-}
-
-int establish_connection(char* hostname, char* port) {
-
-    struct addrinfo* peer_address = get_peer_address(hostname, port);
-    print_host_ip_and_service_info(peer_address);
-    int socket_peer = get_socket_peer(peer_address);
-    connect_to_peer(socket_peer, peer_address);
-    freeaddrinfo(peer_address);
-
-    return socket_peer;
 
 }
 
