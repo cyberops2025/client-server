@@ -1,5 +1,5 @@
-#include "includes.h"
-#include "connect_to_peer.h"
+#include "../include/includes.h"
+#include "../include/connect_to_peer.h"
 
 void connect_to_peer(int socket_peer, struct addrinfo* peer_address) {
 

@@ -1,12 +1,12 @@
 // Learned how to write this code using the following:
 // https://github.com/PacktPublishing/Hands-On-Network-Programming-with-C
 
-#include "includes.h"
-#include "validate_inputs.h"
-#include "establish_connection.h"
-#include "select_or_error.h"
-#include "receive_data.h"
-#include "send_data.h"
+#include "../include/includes.h"
+#include "../include/validate_inputs.h"
+#include "../include/establish_connection.h"
+#include "../include/select_or_error.h"
+#include "../include/receive_data.h"
+#include "../include/send_data.h"
 
 int main(int argc, char* argv[]) {
     

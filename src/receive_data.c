@@ -1,5 +1,5 @@
-#include "includes.h"
-#include "receive_data.h"
+#include "../include/includes.h"
+#include "../include/receive_data.h"
 
 void receive_data(int socket_peer, fd_set* reads) {
 

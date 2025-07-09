@@ -1,5 +1,5 @@
-#include "includes.h"
-#include "print_host_ip_and_service_info.h"
+#include "../include/includes.h"
+#include "../include/print_host_ip_and_service_info.h"
 
 void print_host_ip_and_service_info(struct addrinfo* peer_address) {
 
