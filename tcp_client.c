@@ -1,3 +1,6 @@
+// Learned how to write this code using the following:
+// https://github.com/PacktPublishing/Hands-On-Network-Programming-with-C
+
 #include "includes.h"
 #include "validate_inputs.h"
 #include "establish_connection.h"
