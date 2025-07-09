@@ -17,6 +17,7 @@ $(TARGET) : $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@
 
 $(BLD_DIR)/%.o : $(SRC_DIR)/%.c
+	mkdir -p $(BLD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean
