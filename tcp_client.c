@@ -1,5 +1,8 @@
 #include "includes.h"
 #include "validate_inputs.h"
+#include "establish_connection.h"
+#include "select_or_error.h"
+#include "receive_data.h"
 
 int main(int argc, char* argv[]) {
     
@@ -31,45 +34,5 @@ int main(int argc, char* argv[]) {
     close(socket_peer);
 
     return 0;
-
-}
-
-void receive_data(int socket_peer, fd_set* reads) {
-
-    if (FD_ISSET(socket_peer, reads)) {
-        char read[4096];
-        int bytes_received = recv(socket_peer, read, 4096, 0);
-        if (bytes_received < 1) {
-            printf("Connection closed by peer.\n");
-            exit(1);
-        }
-        printf("Received (%d bytes), %.*s", bytes_received, bytes_received, read);
-    }
-
-}
-
-void select_or_error(int socket_peer, fd_set* reads) {
-
-    struct timeval timeout;
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 100000;
-
-    int status = select(socket_peer+1, reads, 0, 0, &timeout);
-    if (status < 0) {
-        fprintf(stderr, "select() failed. (%d)\n", errno);
-        exit(1);
-    }
-
-}
-
-void send_data(int socket_peer, fd_set* reads) {
-
-    if (FD_ISSET(0, reads)) {
-        char read[4096];
-        if (!fgets(read, 4096, stdin)) exit(1);
-        printf("Sending %s", read);
-        int bytes_sent = send(socket_peer, read, strlen(read), 0);
-        printf("Sent %d bytes.\n", bytes_sent);
-    }
 
 }
