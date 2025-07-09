@@ -1,21 +1,29 @@
-objects = 	tcp_client.o validate_inputs.o establish_connection.o get_peer_address.o \
-			print_host_ip_and_service_info.o get_socket_peer.o connect_to_peer.o \
-			receive_data.o select_or_error.o send_data.o
+# I found this example here:
+# https://web.stanford.edu/class/archive/cs/cs107/cs107.1174/guide_make.html
 
-tcp_client : $(objects)
-	cc -o tcp_client $(objects)
+CC =		gcc
+# Will include debug info and not optimize
+# so I can look at the assembly, etc.
+CFLAGS =	-g -Wall -O0
 
-tcp_client.o : 						includes.h
-validate_inputs.o : 				validate_inputs.h includes.h
-establish_connection.o : 			establish_connection.h includes.h
-get_peer_address.o : 				get_peer_address.h includes.h
-print_host_ip_and_service_info.o : 	print_host_ip_and_service_info.h includes.h
-get_socket_peer.o : 				get_socket_peer.h includes.h
-connect_to_peer.o :					connect_to_peer.h includes.h
-receive_data.o :					receive_data.h includes.h
-select_or_error.o :					select_or_error.h includes.h
-send_data.o :						send_data.h includes.h
+SOURCES = 	tcp_client.c \
+			connect_to_peer.c \
+			establish_connection.c \
+			get_peer_address.c \
+			get_socket_peer.c \
+			print_host_ip_and_service_info.c \
+			receive_data.c \
+			select_or_error.c \
+			send_data.c \
+			validate_inputs.c
 
-.PHONY : clean
-clean :
-	rm tcp_client $(objects)
+OBJECTS =	$(SOURCES:.c=.o)
+TARGET =	tcp_client
+
+$(TARGET) : $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $^
+
+.PHONY: clean
+
+clean:
+	rm -f $(TARGET) $(OBJECTS) 
